@@ -49,6 +49,18 @@ public class PlayerController : MonoBehaviour, @InputActions.IPlayerActions {
 
     public void OnMove(InputAction.CallbackContext context){
         direction = context.ReadValue<Vector2>();
+        direction.x = Mathf.Clamp(direction.x, -1f, 1f);
+    }
+
+    public void OnMoveTo(InputAction.CallbackContext context){
+        var target = context.ReadValue<Vector2>();
+        if(!Camera.main) return;
+        target = Camera.main.ScreenToViewportPoint(target) * 2f - Vector3.one;
+        if(Mathf.Abs(target.x) > 1f) return;
+        float deadzone = 0.5f;
+        if(target.x < -deadzone) direction.x = -1f;
+        else if(target.x > deadzone) direction.x = 1f;
+        else direction.x = 0f;
     }
 
     public void OnFire(InputAction.CallbackContext context){
